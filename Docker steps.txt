@@ -1,0 +1,69 @@
+First create Docker file named as "Dockerfile" 
+
+Run command "docker build ." in the project folder it will create image id
+
+Run command "docker run -p 3000:3000 image id" also specify the port where the server will run and the container will run
+
+
+FROM node:14
+
+WORKDIR /server
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "node", "server.js" ]
+
+
+docker run -dit --name repd -e CHOKIDAR_USEPOLLING=true -p 3003:3000 --mount type=bind,source=C:/Users/sonamj/Desktop/repd,target=/work node
+
+docker run -d -it --name node-app -p 8000:8000 --mount type=bind,source=D:/org_kra/node,target=/example -v /example/node_modules node
+
+
+docker run -dit --name repd -e CHOKIDAR_USEPOLLING=true -p 3003:3000 --mount type=bind,source=C:/Users/sonamj/Desktop/repd,target=/work node
+
+docker exec -it REPD //bin//sh
+
+FROM node:16.3.0-alpine
+
+WORKDIR /app
+
+COPY package.json /app/
+COPY package-lock.json /app/
+COPY . /app/
+
+RUN npm install
+
+CMD npm start
+
+// build docker image with tag name -- image:v1
+docker build -t image:v1 .
+
+// run the docker image in background and give the container name
+docker run -dit --name myapp -p 3000:3000 <img-id>
+
+// see the logs of the running container
+docker logs <container-name>
+
+
+// Named Volume
+docker run -dit -p 3000:80 --name FEEDBACK-VOLUME --rm -v feedback:/app/feedback 3ae7e50c5b4d
+docker volume ls // shows the list of volumes
+
+// Bind mount
+docker run -dit -p 3000:80 --name FEEDBACK-VOLUME --rm -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app" 3ae7e50c5b4d
+
+docker run -dit -p 3000:80 --rm --name FEEDBACK-VOLUME -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app" -v /app/node_modules 3ae7e50c5b4d 
+
+// refresh node server with help of nodemon
+docker run -dit -p 3000:80 -e CHOKIDAR_USEPOLLING=true --rm --name FEEDBACK-VOLUME -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app" -v /app/node_modules 48ebdca9d3de288d717695234bab010e26a7422f1afbd5996968ad7670559830
+
+// 2types of volumes --
+1. Anonymous Volume =>> docker run -v /app/data ......
+2. Named Volume =>> docker run -v data:/app/data ......
+3. Bind Mount =>> docker run -v /path-to-code:/app/data .....
