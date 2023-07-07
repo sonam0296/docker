@@ -27,19 +27,7 @@ docker run -d -it --name node-app -p 8000:8000 --mount type=bind,source=D:/org_k
 
 docker run -dit --name repd -e CHOKIDAR_USEPOLLING=true -p 3003:3000 --mount type=bind,source=C:/Users/sonamj/Desktop/repd,target=/work node
 
-docker exec -it REPD //bin//sh
-
-FROM node:16.3.0-alpine
-
-WORKDIR /app
-
-COPY package.json /app/
-COPY package-lock.json /app/
-COPY . /app/
-
-RUN npm install
-
-CMD npm start
+docker exec -it REPD //bin//sh  ==>> to see the container folder structure
 
 // build docker image with tag name -- image:v1
 docker build -t image:v1 .
@@ -61,9 +49,29 @@ docker run -dit -p 3000:80 --name FEEDBACK-VOLUME --rm -v feedback:/app/feedback
 docker run -dit -p 3000:80 --rm --name FEEDBACK-VOLUME -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app" -v /app/node_modules 3ae7e50c5b4d 
 
 // refresh node server with help of nodemon
-docker run -dit -p 3000:80 -e CHOKIDAR_USEPOLLING=true --rm --name FEEDBACK-VOLUME -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app" -v /app/node_modules 48ebdca9d3de288d717695234bab010e26a7422f1afbd5996968ad7670559830
+docker run -dit -p 3000:80 -e CHOKIDAR_USEPOLLING=true --rm --name FEEDBACK-VOLUME -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app" -v /app/node_modules 48ebdca9d3de
+
+
+// Volume read-only 
+docker run -dit -p 3000:80 -e CHOKIDAR_USEPOLLING=true --rm --name FEEDBACK-VOLUME -v feedback:/app/feedback -v "D:/Docker/data-volumes-01-starting-setup:/app:ro" -v /app/node_modules 48ebdca9d3de
 
 // 2types of volumes --
-1. Anonymous Volume =>> docker run -v /app/data ......
-2. Named Volume =>> docker run -v data:/app/data ......
-3. Bind Mount =>> docker run -v /path-to-code:/app/data .....
+1. Anonymous Volume =>>  docker run -v /app/data ......
+2. Named Volume =>> To persist the data ==>> docker run -v data:/app/data ......
+3. Bind Mount =>> Persist and reflect the changes ==>>> docker run -v /path-to-code:/app/data .....  ===>> Docker does not manage it
+
+
+We do not use bind mount on the production as it will not have the particular path and also we don't do changes which should be reflcted
+
+We only use bind mount for development purpose so that if we do any changes it gets reflected
+
+// ENV & ARGuments
+
+// --env or -e 
+docker run -dit -p 3000:3002 -e CHOKIDAR_USEPOLLING=true --rm --name FEEDBACK-VOLUME-ENV --env PORT=3002 -v feedback:/app/feedback -v "D:/Docker/Node_dockerize:/app" -v /app/node_modules 255740a21dd4e3c3598e5536c6c23a09d1af208a32284a36531dd2d7182abf4a
+
+// env file
+docker run -dit -p 3000:3002 -e CHOKIDAR_USEPOLLING=true --rm --name FEEDBACK-VOLUME-ENV --env-file ./.env -v feedback:/app/feedback -v "D:/Docker/Node_dockerize:/app" -v /app/node_modules 255740a21dd4e3c3598e5536c6c23a09d1af208a32284a36531dd2d7182abf4a
+
+// we use Args in cmd to lock server with certain value
+docker build -t node-env:dev-arg --build-arg DEFAULT_PORT=8000 .
